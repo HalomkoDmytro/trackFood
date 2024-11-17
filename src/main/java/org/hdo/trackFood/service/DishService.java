@@ -2,6 +2,7 @@ package org.hdo.trackFood.service;
 
 import lombok.RequiredArgsConstructor;
 import org.hdo.trackFood.converter.DishConverter;
+import org.hdo.trackFood.converter.ProductSizeConverter;
 import org.hdo.trackFood.dto.DishDto;
 import org.hdo.trackFood.model.Dish;
 import org.hdo.trackFood.model.ProductSize;
@@ -15,6 +16,7 @@ import java.util.List;
 public class DishService {
 
     private final DishRepository dishRepository;
+    private final ProductSizeService productSizeService;
 
     public Dish getById(int id) {
         return dishRepository.findById(id)
@@ -30,44 +32,36 @@ public class DishService {
                     .id(dto.id())
                     .mealName(dto.mealName())
                     .comment(dto.comment())
-                    .gr(dto.gr())
-                    .calories(dto.calories())
                     .build();
+            List<ProductSize> productSizes = dto.productSizeDtoList().stream()
+                    .map(ProductSizeConverter::convert)
+                    .toList();
+
+            recalculate(dish, productSizes);
         }
 
         return dishRepository.save(dish);
     }
 
-    public void addProductSize(Dish dish, ProductSize ps) {
-        List<ProductSize> productSizes = dish.getProductSizes();
-        productSizes.add(ps);
-        if (dish.getCalories() == null || dish.getGr() == null) {
-            recalculate(dish);
-        } else {
-            dish.setCalories(dish.getCalories() + ps.getProduct().getCalories());
-            dish.setGr(dish.getGr() + ps.getGr());
-        }
+    public void delete(int id) {
+        dishRepository.deleteById(id);
     }
 
-    public void removeProductSize(Dish dish, ProductSize ps) {
-        List<ProductSize> productSizes = dish.getProductSizes();
-        productSizes.remove(ps);
-        if (dish.getCalories() == null || dish.getGr() == null) {
-            recalculate(dish);
-        } else {
-            dish.setCalories(dish.getCalories() - ps.getProduct().getCalories());
-            dish.setGr(dish.getGr() - ps.getGr());
-        }
+    public Long getGr(List<Dish> dishes) {
+        return dishes.stream()
+                .map(Dish::getGr)
+                .reduce(0L, Long::sum);
     }
 
-    private void recalculate(Dish dish) {
-        List<ProductSize> productSizes = dish.getProductSizes();
-        dish.setCalories(productSizes.stream()
-                .map(p -> p.getProduct().getCalories())
-                .reduce(0.0, Double::sum));
-        dish.setGr(productSizes.stream()
-                .map(ProductSize::getGr)
-                .reduce(0L, Long::sum));
+    public Double getCalories(List<Dish> dishes) {
+        return dishes.stream()
+                .map(Dish::getCalories)
+                .reduce(0.0, Double::sum);
+    }
+
+    private void recalculate(Dish dish, List<ProductSize> productSizes) {
+        dish.setProductSizes(productSizes);
+        dish.setGr(productSizeService.getGr(productSizes));
     }
 
 }

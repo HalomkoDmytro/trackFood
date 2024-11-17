@@ -41,6 +41,6 @@ public class DayConsume {
     private Long gr;
 
     @OneToMany(mappedBy = "dayConsume")
-    private List<Dish> dished;
+    private List<Dish> dishes;
 
 }

@@ -37,7 +37,7 @@ public class ProductService {
 
     public Product getById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Not found"));
+                .orElseThrow(()-> new RuntimeException("Product not found"));
     }
 
     public List<Product> getAll() {
