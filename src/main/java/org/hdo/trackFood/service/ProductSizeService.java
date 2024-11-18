@@ -43,4 +43,11 @@ public class ProductSizeService {
                 .reduce(0L, Long::sum);
     }
 
+    public Double getCalories(List<ProductSize> productSizes) {
+        return productSizes.stream()
+                .map(ProductSize::getDish)
+                .map(Dish::getCalories)
+                .reduce(0d, Double::sum);
+    }
+
 }

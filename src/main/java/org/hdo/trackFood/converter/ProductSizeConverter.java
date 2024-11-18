@@ -16,7 +16,9 @@ public final class ProductSizeConverter {
     public static ProductSizeDto convert(ProductSize productSize) {
         return new ProductSizeDto(productSize.getId(),
                 productSize.getGr(),
+                productSize.getDish() == null ? null : productSize.getDish().getId(),
                 ProductConverter.convert(productSize.getProduct())
         );
     }
+
 }

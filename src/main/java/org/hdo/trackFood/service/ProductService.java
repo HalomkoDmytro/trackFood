@@ -37,11 +37,15 @@ public class ProductService {
 
     public Product getById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     public List<Product> getAll() {
         return productRepository.findAll();
+    }
+
+    public List<Product> findByName(String name) {
+        return productRepository.findAllByNameLike(name);
     }
 
     public void delete(Long id) {

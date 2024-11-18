@@ -48,6 +48,14 @@ public class ProductController {
         return ProductConverter.convert(productService.getById(id));
     }
 
+    @GetMapping("/product:find/name:{name}")
+    public List<ProductDto> findByName(@PathVariable String name) {
+        return productService.findByName(name)
+                .stream()
+                .map(ProductConverter::convert)
+                .toList();
+    }
+
     @PostMapping("/product:delete/{id}")
     public void deleteById(@PathVariable Long id) {
         productService.delete(id);

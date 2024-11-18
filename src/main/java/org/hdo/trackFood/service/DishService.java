@@ -18,7 +18,7 @@ public class DishService {
     private final DishRepository dishRepository;
     private final ProductSizeService productSizeService;
 
-    public Dish getById(int id) {
+    public Dish getById(Long id) {
         return dishRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("MealSize not found"));
     }
@@ -43,7 +43,7 @@ public class DishService {
         return dishRepository.save(dish);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         dishRepository.deleteById(id);
     }
 
@@ -62,6 +62,7 @@ public class DishService {
     private void recalculate(Dish dish, List<ProductSize> productSizes) {
         dish.setProductSizes(productSizes);
         dish.setGr(productSizeService.getGr(productSizes));
+        dish.setCalories(productSizeService.getCalories(productSizes));
     }
 
 }
